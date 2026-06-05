@@ -1,2 +1,3 @@
-# aidc
-企業 AI 發展顧問, AI Development Consultant
+# AIDC.work
+
+The professional website of Jack Y. J. Hwang (yjhwang), Enterprise AI Development Consultant.
