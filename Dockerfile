@@ -9,10 +9,14 @@ RUN npm ci
 
 COPY . .
 
-ARG APP_VERSION=dev
-ENV NEXT_PUBLIC_APP_VERSION=${APP_VERSION}
-
-RUN npm run build
+# Single source of truth: package.json version (override with --build-arg APP_VERSION if needed)
+ARG APP_VERSION
+RUN if [ -n "$APP_VERSION" ]; then \
+      export NEXT_PUBLIC_APP_VERSION="$APP_VERSION"; \
+    else \
+      export NEXT_PUBLIC_APP_VERSION="$(node -p "require('./package.json').version")"; \
+    fi && \
+    npm run build
 
 FROM nginx:1.27-alpine AS runner
 

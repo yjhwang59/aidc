@@ -2,8 +2,9 @@ services:
   web:
     build:
       context: .
+      # APP_VERSION defaults to package.json version in Dockerfile
       args:
-        APP_VERSION: ${APP_VERSION:-0.1.0}
+        APP_VERSION: ${APP_VERSION:-}
     image: aidc-work:latest
     environment:
       TZ: Asia/Taipei
