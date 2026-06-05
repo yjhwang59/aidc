@@ -4,7 +4,9 @@ services:
       context: .
       args:
         APP_VERSION: ${APP_VERSION:-0.1.0}
-    image: ghcr.io/yjhwang59/aidc-work:local
+    image: aidc-work:latest
+    environment:
+      TZ: Asia/Taipei
     ports:
       - "3163:80"
     restart: unless-stopped

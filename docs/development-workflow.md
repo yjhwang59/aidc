@@ -183,21 +183,19 @@ draft: false
 
 ### 10.1 架構
 
-專案使用 Next.js `output: "export"` 產出靜態檔案至 `out/`，並以 **Docker + Nginx** 提供正式環境服務。映像檔發布至 GitHub Container Registry（GHCR）。
+專案使用 Next.js `output: "export"` 產出靜態檔案至 `out/`，並以 **Docker + Nginx** 提供正式環境服務。遠端部署模式與 **fyhGoogle** 相同：SSH 至 `10.23.1.53`，`git pull` 後在主機上 `docker compose up -d --build`。
 
 ### 10.2 CI / CD 流程
 
 | Workflow | 觸發 | 用途 |
 |----------|------|------|
 | `.github/workflows/ci.yml` | PR、`main` push | `npm ci`、lint、build 品質檢查 |
-| `.github/workflows/deploy.yml` | `main` push、手動 | 建置 Docker 映像並推送至 `ghcr.io/yjhwang59/aidc-work` |
+| `.github/workflows/deploy.yml` | `main` push、手動 | SSH 部署至 `10.23.1.53` |
 
 ```text
 開發 → PR → CI 通過 → 合併 main
                           ↓
-              CI 再次驗證 + Deploy 推送 Docker 映像
-                          ↓
-              主機 docker pull 並重啟容器
+              deploy.yml：SSH → git pull → docker compose up -d --build
 ```
 
 ### 10.3 版本發布（Bump）
@@ -211,7 +209,7 @@ git commit -m "chore(release): bump version to vX.Y.Z"
 git push origin main
 ```
 
-推送後 GitHub Actions 會自動建置並推送對應版本的 Docker 映像。頁尾會顯示 `NEXT_PUBLIC_APP_VERSION`（建置時由 `package.json` 注入）。
+推送後 GitHub Actions 會自動部署至 `10.23.1.53`。頁尾會顯示 `NEXT_PUBLIC_APP_VERSION`（建置時由 `package.json` 注入）。
 
 ### 10.4 本機 Docker 驗證
 
@@ -226,14 +224,47 @@ npm run docker:up
 npm run docker:down
 ```
 
-### 10.5 正式環境拉取
+### 10.5 遠端主機自動部署（10.23.1.53）
+
+與 **fyhGoogle** 相同設定，沿用既有 SSH 金鑰與主機環境：
+
+| 項目 | 值 |
+|------|-----|
+| 主機 | `10.23.1.53` |
+| SSH 使用者 | `yjhwang` |
+| 遠端目錄 | `/home/yjhwang/aidc-work` |
+| 對外 URL | `http://10.23.1.53:3163` |
+| 映像 | `aidc-work:latest`（主機本機 build） |
+
+#### GitHub Secret
+
+與 fyhGoogle GitLab CI 相同，只需 **`SSH_PRIVATE_KEY`**（若已在 org / repo 層級設定過，aidc-work 可直接沿用）。
+
+#### 主機首次初始化（只需一次）
 
 ```bash
-docker pull ghcr.io/yjhwang59/aidc-work:latest
-docker run -d --name aidc-work -p 80:80 --restart unless-stopped ghcr.io/yjhwang59/aidc-work:latest
+ssh yjhwang@10.23.1.53
+git clone https://github.com/yjhwang59/aidc-work.git /home/yjhwang/aidc-work
+cd /home/yjhwang/aidc-work
+docker compose up -d --build
 ```
 
-首次從 GHCR 拉取私有/組織映像時，需在主機以 GitHub PAT 登入。
+#### 手動部署
+
+**已 push 至 GitHub：**
+
+```powershell
+# Windows（SSH git pull，同 GitLab deploy_remote）
+bash scripts/deploy-remote.sh
+```
+
+**本機未 push、需直接上傳程式碼：**
+
+```powershell
+.\deploy_remote.ps1
+```
+
+（與 fyhGoogle 相同：tar 打包 → scp → 遠端解壓 → `docker compose up -d --build`）
 
 ## 11. AI 輔助開發
 
