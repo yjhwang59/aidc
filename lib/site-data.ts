@@ -4,7 +4,7 @@ export const siteConfig = {
   description:
     "協助企業從 AI 工具使用，走向 AI 系統開發與 AI Agent 工作流落地。",
   author: "Jack Y. J. Hwang",
-  email: "hello@aidc.work",
+  email: "yjhwang59@gmail.com",
   tagline:
     "協助企業從 AI 工具使用，走向 AI 系統開發與 AI Agent 工作流落地。",
   version: process.env.NEXT_PUBLIC_APP_VERSION ?? "0.1.0",
