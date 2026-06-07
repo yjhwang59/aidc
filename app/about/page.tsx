@@ -5,8 +5,8 @@ import { createPageMetadata } from "@/lib/metadata";
 import { siteConfig } from "@/lib/site-data";
 
 export const metadata = createPageMetadata(
-  "關於 Jack Y. J. Hwang",
-  "企業 AI 發展顧問 Jack Y. J. Hwang 的專業背景、服務理念與合作方式。",
+  "關於 Jack Y. J. Hwang（黃燕忠）",
+  "企業 AI 發展顧問 Jack Y. J. Hwang（黃燕忠）的專業背景、服務理念與合作方式。",
 );
 
 const expertise = [
@@ -30,7 +30,7 @@ export default function AboutPage() {
     <>
       <HeroSection
         subtitle="About"
-        title="關於 Jack Y. J. Hwang"
+        title="關於 Jack Y. J. Hwang（黃燕忠）"
         description="企業 AI 發展顧問，專注於協助企業將 AI 工具、Vibe Coding 與 AI Agent 轉化為可運行的系統與工作流。"
       />
 
@@ -40,7 +40,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-xl font-bold text-brand-900">個人簡介</h2>
               <p className="mt-4 leading-relaxed text-brand-600">
-                {siteConfig.author}（黃彥傑）是一位企業 AI
+                {siteConfig.author}（黃燕忠）是一位企業 AI
                 發展顧問，協助決策者與技術團隊從 AI
                 工具試用，走向可運行的系統與工作流落地。服務涵蓋培訓、原型開發、Agent
                 工作流設計與導入路線圖規劃。
