@@ -2,8 +2,8 @@ import { CaseCard } from "@/components/CaseCard";
 import { Container } from "@/components/Container";
 import { CTASection } from "@/components/CTASection";
 import { HeroSection } from "@/components/HeroSection";
+import { getAllCases } from "@/lib/cases";
 import { createPageMetadata } from "@/lib/metadata";
-import { cases } from "@/lib/site-data";
 
 export const metadata = createPageMetadata(
   "案例研究",
@@ -11,6 +11,8 @@ export const metadata = createPageMetadata(
 );
 
 export default function CasesPage() {
+  const cases = getAllCases();
+
   return (
     <>
       <HeroSection
@@ -21,21 +23,25 @@ export default function CasesPage() {
 
       <section className="py-16 sm:py-20">
         <Container>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {cases.map((caseItem) => (
-              <CaseCard
-                key={caseItem.slug}
-                title={caseItem.title}
-                industry={caseItem.industry}
-                serviceType={caseItem.serviceType}
-                description={caseItem.description}
-                tags={caseItem.tags}
-              />
-            ))}
-          </div>
-          <p className="mt-10 text-center text-sm text-brand-500">
-            詳情頁將於內容就緒後開放，目前為 MVP 種子案例摘要。
-          </p>
+          {cases.length > 0 ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {cases.map((caseItem) => (
+                <CaseCard
+                  key={caseItem.slug}
+                  title={caseItem.title}
+                  industry={caseItem.industry}
+                  serviceType={caseItem.serviceType}
+                  description={caseItem.description}
+                  tags={caseItem.tags}
+                  href={`/cases/${caseItem.slug}`}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-sm text-brand-500">
+              案例內容準備中，敬請期待。
+            </p>
+          )}
         </Container>
       </section>
 

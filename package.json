@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start -p 3163",
     "lint": "next lint",
+    "check:links": "node ./scripts/check-internal-links.mjs",
     "release:patch": "npm version patch --no-git-tag-version",
     "docker:build": "docker build -t aidc-work:latest .",
     "docker:up": "docker compose up --build -d",

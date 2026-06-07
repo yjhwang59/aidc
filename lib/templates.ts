@@ -6,23 +6,24 @@ import {
   readMarkdownFile,
 } from "./markdown";
 
-const BLOG_DIR = path.join(process.cwd(), "content", "blog");
+const TEMPLATES_DIR = path.join(process.cwd(), "content", "templates");
 
-export type BlogPost = {
+export type TemplateResource = {
   slug: string;
   title: string;
   description: string;
   date: string;
   author: string;
-  tags: string[];
+  format: string;
   category: string;
+  tags: string[];
   draft: boolean;
   content: string;
   readingMinutes: number;
 };
 
-function mapBlogPost(slug: string): BlogPost | null {
-  const parsed = readMarkdownFile(getMarkdownFilePath(BLOG_DIR, slug));
+function mapTemplate(slug: string): TemplateResource | null {
+  const parsed = readMarkdownFile(getMarkdownFilePath(TEMPLATES_DIR, slug));
   if (!parsed) return null;
 
   const { data, content } = parsed;
@@ -33,21 +34,22 @@ function mapBlogPost(slug: string): BlogPost | null {
     description: String(data.description ?? ""),
     date: String(data.date ?? ""),
     author: String(data.author ?? ""),
-    tags: Array.isArray(data.tags) ? data.tags : [],
+    format: String(data.format ?? "Markdown"),
     category: String(data.category ?? ""),
+    tags: Array.isArray(data.tags) ? data.tags : [],
     draft: Boolean(data.draft),
     content,
     readingMinutes: getReadingMinutes(content),
   };
 }
 
-export function getAllBlogPosts() {
-  return listMarkdownSlugs(BLOG_DIR)
-    .map((slug) => mapBlogPost(slug))
-    .filter((post): post is BlogPost => post !== null && !post.draft)
+export function getAllTemplates() {
+  return listMarkdownSlugs(TEMPLATES_DIR)
+    .map((slug) => mapTemplate(slug))
+    .filter((item): item is TemplateResource => item !== null && !item.draft)
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
-export function getBlogPost(slug: string) {
-  return mapBlogPost(slug);
+export function getTemplate(slug: string) {
+  return mapTemplate(slug);
 }

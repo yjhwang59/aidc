@@ -5,18 +5,15 @@ import { Container } from "@/components/Container";
 import { CTASection } from "@/components/CTASection";
 import { HeroSection } from "@/components/HeroSection";
 import { ServiceCard } from "@/components/ServiceCard";
-import {
-  blogPosts,
-  cases,
-  painPoints,
-  services,
-  templates,
-} from "@/lib/site-data";
+import { getAllBlogPosts } from "@/lib/blog";
+import { getAllCases } from "@/lib/cases";
+import { painPoints, services } from "@/lib/site-data";
+import { getAllTemplates } from "@/lib/templates";
 
 export default function HomePage() {
-  const featuredCases = cases.slice(0, 2);
-  const featuredPosts = blogPosts.slice(0, 2);
-  const featuredTemplates = templates.slice(0, 2);
+  const featuredCases = getAllCases().slice(0, 2);
+  const featuredPosts = getAllBlogPosts().slice(0, 2);
+  const featuredTemplates = getAllTemplates().slice(0, 2);
 
   return (
     <>
@@ -113,7 +110,7 @@ export default function HomePage() {
                 serviceType={caseItem.serviceType}
                 description={caseItem.description}
                 tags={caseItem.tags}
-                href="/cases"
+                href={`/cases/${caseItem.slug}`}
               />
             ))}
           </div>
@@ -144,7 +141,7 @@ export default function HomePage() {
                     category={post.category}
                     description={post.description}
                     tags={post.tags}
-                    href="/blog"
+                    href={`/blog/${post.slug}`}
                   />
                 ))}
               </div>
@@ -164,9 +161,10 @@ export default function HomePage() {
               </div>
               <div className="mt-8 grid gap-6">
                 {featuredTemplates.map((template) => (
-                  <div
+                  <Link
                     key={template.slug}
-                    className="rounded-lg border border-brand-100 bg-white p-6"
+                    href={`/templates/${template.slug}`}
+                    className="block rounded-lg border border-brand-100 bg-white p-6 transition-shadow hover:border-accent/40 hover:shadow-md"
                   >
                     <p className="text-xs text-brand-500">{template.format}</p>
                     <h3 className="mt-1 text-lg font-semibold text-brand-900">
@@ -185,7 +183,7 @@ export default function HomePage() {
                         </span>
                       ))}
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

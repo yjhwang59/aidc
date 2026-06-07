@@ -6,23 +6,24 @@ import {
   readMarkdownFile,
 } from "./markdown";
 
-const BLOG_DIR = path.join(process.cwd(), "content", "blog");
+const CASES_DIR = path.join(process.cwd(), "content", "cases");
 
-export type BlogPost = {
+export type CaseStudy = {
   slug: string;
   title: string;
   description: string;
   date: string;
   author: string;
+  industry: string;
+  serviceType: string;
   tags: string[];
-  category: string;
   draft: boolean;
   content: string;
   readingMinutes: number;
 };
 
-function mapBlogPost(slug: string): BlogPost | null {
-  const parsed = readMarkdownFile(getMarkdownFilePath(BLOG_DIR, slug));
+function mapCaseStudy(slug: string): CaseStudy | null {
+  const parsed = readMarkdownFile(getMarkdownFilePath(CASES_DIR, slug));
   if (!parsed) return null;
 
   const { data, content } = parsed;
@@ -33,21 +34,22 @@ function mapBlogPost(slug: string): BlogPost | null {
     description: String(data.description ?? ""),
     date: String(data.date ?? ""),
     author: String(data.author ?? ""),
+    industry: String(data.industry ?? ""),
+    serviceType: String(data.serviceType ?? ""),
     tags: Array.isArray(data.tags) ? data.tags : [],
-    category: String(data.category ?? ""),
     draft: Boolean(data.draft),
     content,
     readingMinutes: getReadingMinutes(content),
   };
 }
 
-export function getAllBlogPosts() {
-  return listMarkdownSlugs(BLOG_DIR)
-    .map((slug) => mapBlogPost(slug))
-    .filter((post): post is BlogPost => post !== null && !post.draft)
+export function getAllCases() {
+  return listMarkdownSlugs(CASES_DIR)
+    .map((slug) => mapCaseStudy(slug))
+    .filter((item): item is CaseStudy => item !== null && !item.draft)
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
-export function getBlogPost(slug: string) {
-  return mapBlogPost(slug);
+export function getCaseStudy(slug: string) {
+  return mapCaseStudy(slug);
 }

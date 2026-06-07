@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { Container } from "@/components/Container";
 import { CTASection } from "@/components/CTASection";
 import { HeroSection } from "@/components/HeroSection";
 import { createPageMetadata } from "@/lib/metadata";
-import { templates } from "@/lib/site-data";
+import { getAllTemplates } from "@/lib/templates";
 
 export const metadata = createPageMetadata(
   "模板與工具",
@@ -10,6 +11,8 @@ export const metadata = createPageMetadata(
 );
 
 export default function TemplatesPage() {
+  const templates = getAllTemplates();
+
   return (
     <>
       <HeroSection
@@ -20,37 +23,41 @@ export default function TemplatesPage() {
 
       <section className="py-16 sm:py-20">
         <Container>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {templates.map((template) => (
-              <article
-                key={template.slug}
-                className="flex flex-col rounded-lg border border-brand-100 bg-white p-6"
-              >
-                <p className="text-xs font-medium uppercase tracking-wider text-brand-500">
-                  {template.format}
-                </p>
-                <h2 className="mt-2 text-lg font-semibold text-brand-900">
-                  {template.title}
-                </h2>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-brand-600">
-                  {template.description}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {template.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs text-brand-600"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-          <p className="mt-10 text-center text-sm text-brand-500">
-            模板下載與詳情頁將於內容就緒後開放，目前為 MVP 種子資源摘要。
-          </p>
+          {templates.length > 0 ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {templates.map((template) => (
+                <Link
+                  key={template.slug}
+                  href={`/templates/${template.slug}`}
+                  className="flex flex-col rounded-lg border border-brand-100 bg-white p-6 transition-shadow hover:border-accent/40 hover:shadow-md"
+                >
+                  <p className="text-xs font-medium uppercase tracking-wider text-brand-500">
+                    {template.format}
+                  </p>
+                  <h2 className="mt-2 text-lg font-semibold text-brand-900">
+                    {template.title}
+                  </h2>
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-brand-600">
+                    {template.description}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {template.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs text-brand-600"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-sm text-brand-500">
+              模板資源準備中，敬請期待。
+            </p>
+          )}
         </Container>
       </section>
 
