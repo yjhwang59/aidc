@@ -18,10 +18,10 @@ Write-Host "--- [1/4] Packaging project files ---" -ForegroundColor Cyan
   --exclude="out" `
   --exclude=".git" `
   -czf $archiveName `
-  app components content lib public docs `
+  app components content lib public docs prisma `
   Dockerfile nginx.conf docker-compose.yml `
   package.json package-lock.json `
-  next.config.ts tsconfig.json postcss.config.mjs tailwind.config.ts eslint.config.mjs next-env.d.ts AGENTS.md
+  next.config.ts tsconfig.json postcss.config.mjs tailwind.config.ts eslint.config.mjs next-env.d.ts middleware.ts AGENTS.md .env.example
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Packaging failed!"

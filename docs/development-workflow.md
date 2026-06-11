@@ -8,8 +8,9 @@
 |------|------|
 | 專案名稱 | AIDC.work |
 | 技術棧 | Next.js App Router、TypeScript、Tailwind CSS、MDX/Markdown |
-| 架構 | 靜態優先（Static-first） |
-| MVP 限制 | 無資料庫、無認證、無 CMS |
+| 架構 | Next.js SSR + API Routes（內容仍為 Markdown 靜態讀取） |
+| 資料庫 | Neon PostgreSQL + Prisma（預約服務） |
+| 部署 | Vercel（`vercel-build` 含 migrate deploy） |
 
 ## 2. 專案結構（預期）
 
@@ -63,7 +64,16 @@ npm run start
 
 ### 3.3 環境變數
 
-MVP 階段預期無需資料庫連線。若未來加入表單或分析工具，使用 `.env.local` 管理，**勿提交至版本庫**。
+複製 `.env.example` 為 `.env.local`，填入 Neon `DATABASE_URL`、管理員帳密、`SESSION_SECRET` 與 Resend 設定。**勿提交至版本庫**。
+
+```bash
+# 首次設定資料庫
+npm run db:migrate
+npm run db:seed
+
+# 可選：建立示範可預約時段
+SEED_DEMO_SLOTS=true npm run db:seed
+```
 
 ## 4. 分支策略
 

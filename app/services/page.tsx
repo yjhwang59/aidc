@@ -64,7 +64,7 @@ export default function ServicesPage() {
         subtitle="Services"
         title="服務項目"
         description="依企業階段與需求，提供從培訓、原型開發到 Agent 工作流與導入藍圖的完整顧問支援。"
-        primaryCta={{ label: "預約諮詢", href: "/contact" }}
+        primaryCta={{ label: "預約諮詢", href: "/booking" }}
       />
 
       <section className="py-16 sm:py-20">

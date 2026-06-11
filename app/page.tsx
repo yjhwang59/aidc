@@ -21,7 +21,7 @@ export default function HomePage() {
         subtitle="Enterprise AI Development Consultant"
         title="企業 AI 發展顧問"
         description="協助企業將 AI 從實驗走向落地。從 AI 工具培訓、Vibe Coding 到 AI Agent 工作流，建立可運行、可複製的系統與導入路線圖。"
-        primaryCta={{ label: "預約諮詢", href: "/contact" }}
+        primaryCta={{ label: "預約諮詢", href: "/booking" }}
         secondaryCta={{ label: "了解服務", href: "/services" }}
       />
 
@@ -194,7 +194,7 @@ export default function HomePage() {
       <CTASection
         title="想討論您的 AI 導入計畫？"
         description="無論是培訓、原型開發、Agent 工作流或導入路線圖規劃，歡迎與我聯繫，一起找出適合您團隊的下一步。"
-        primaryCta={{ label: "預約諮詢", href: "/contact" }}
+        primaryCta={{ label: "預約諮詢", href: "/booking" }}
         secondaryCta={{ label: "瀏覽課程", href: "/courses" }}
       />
     </>

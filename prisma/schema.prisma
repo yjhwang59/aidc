@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SlotStatus {
+  AVAILABLE
+  BOOKED
+  BLOCKED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastLoginAt  DateTime?
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?
+  durationMin Int      @default(60)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  slots    AvailabilitySlot[]
+  bookings Booking[]
+
+  @@index([isActive, sortOrder])
+}
+
+model AvailabilitySlot {
+  id        String     @id @default(cuid())
+  serviceId String
+  startAt   DateTime
+  endAt     DateTime
+  status    SlotStatus @default(AVAILABLE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  service Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  booking Booking?
+
+  @@unique([serviceId, startAt])
+  @@index([serviceId, startAt])
+  @@index([status, startAt])
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  serviceId   String
+  slotId      String        @unique
+  status      BookingStatus @default(PENDING)
+  name        String
+  email       String
+  company     String?
+  phone       String?
+  message     String?
+  adminNote   String?
+  confirmedAt DateTime?
+  cancelledAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  service Service          @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  slot    AvailabilitySlot @relation(fields: [slotId], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([email])
+  @@index([createdAt])
+}

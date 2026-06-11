@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Container } from "@/components/Container";
 import { HeroSection } from "@/components/HeroSection";
 import { createPageMetadata } from "@/lib/metadata";
@@ -14,7 +15,8 @@ export default function ContactPage() {
       <HeroSection
         subtitle="Contact"
         title="聯絡我們"
-        description="想討論您的 AI 導入計畫？歡迎與我聯繫，我會在兩個工作天內回覆。"
+        description="想討論您的 AI 導入計畫？歡迎線上預約諮詢時段，或直接來信聯絡。"
+        primaryCta={{ label: "線上預約諮詢", href: "/booking" }}
       />
 
       <section className="py-16 sm:py-20">
@@ -48,7 +50,7 @@ export default function ContactPage() {
               <div className="mt-8 rounded-lg bg-brand-50 p-6">
                 <h3 className="font-semibold text-brand-900">合作流程</h3>
                 <ol className="mt-3 space-y-2 text-sm text-brand-600">
-                  <li>1. 您來信說明需求與現況</li>
+                  <li>1. 線上預約或來信說明需求與現況</li>
                   <li>2. 安排初步討論（線上或實體）</li>
                   <li>3. 提出服務建議與報價</li>
                   <li>4. 確認合作後開始執行</li>
@@ -57,66 +59,30 @@ export default function ContactPage() {
             </div>
 
             <div className="rounded-lg border border-brand-100 bg-white p-8">
-              <h2 className="text-lg font-semibold text-brand-900">聯絡表單</h2>
+              <h2 className="text-lg font-semibold text-brand-900">線上預約諮詢</h2>
               <p className="mt-2 text-sm text-brand-500">
-                MVP 階段請直接來信，表單功能將於後續版本開放。
+                選擇服務類型與合適時段，我們將在兩個工作天內確認您的預約。
               </p>
-              <form className="mt-6 space-y-4" action={`mailto:${siteConfig.email}`}>
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-brand-700"
-                  >
-                    姓名
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    disabled
-                    className="mt-1 w-full rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-500"
-                    placeholder="即將開放"
-                  />
+
+              <div className="mt-6 space-y-4">
+                <div className="rounded-lg bg-brand-50 p-4 text-sm text-brand-700">
+                  <p>支援的諮詢類型：</p>
+                  <ul className="mt-2 list-inside list-disc space-y-1">
+                    <li>AI 工具培訓</li>
+                    <li>Vibe Coding</li>
+                    <li>AI Agent 工作流</li>
+                    <li>AI 導入藍圖</li>
+                    <li>AI 系統開發</li>
+                  </ul>
                 </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-brand-700"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    disabled
-                    className="mt-1 w-full rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-500"
-                    placeholder="即將開放"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-brand-700"
-                  >
-                    訊息
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={4}
-                    disabled
-                    className="mt-1 w-full rounded-md border border-brand-200 bg-brand-50 px-3 py-2 text-sm text-brand-500"
-                    placeholder="即將開放"
-                  />
-                </div>
-                <a
-                  href={`mailto:${siteConfig.email}?subject=AIDC.work 合作洽詢`}
+
+                <Link
+                  href="/booking"
                   className="inline-flex w-full items-center justify-center rounded-md bg-accent px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-dark"
                 >
-                  改以 Email 聯絡
-                </a>
-              </form>
+                  前往預約
+                </Link>
+              </div>
             </div>
           </div>
         </Container>

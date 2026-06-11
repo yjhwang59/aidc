@@ -16,6 +16,7 @@ const staticRoutes = [
   "/blog",
   "/templates",
   "/contact",
+  "/booking",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -33,7 +33,7 @@ export function Header() {
 
           <div className="hidden md:block">
             <Link
-              href="/contact"
+              href="/booking"
               className="inline-flex items-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-dark"
             >
               預約諮詢
@@ -87,7 +87,7 @@ export function Header() {
               ))}
               <li>
                 <Link
-                  href="/contact"
+                  href="/booking"
                   className="inline-flex items-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-white"
                   onClick={() => setMenuOpen(false)}
                 >

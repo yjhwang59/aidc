@@ -6,6 +6,8 @@ services:
       args:
         APP_VERSION: ${APP_VERSION:-}
     image: aidc-work:latest
+    env_file:
+      - .env
     environment:
       TZ: Asia/Taipei
     ports:

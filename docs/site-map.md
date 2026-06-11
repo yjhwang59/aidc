@@ -30,7 +30,13 @@ AIDC.work
 ├─ 模板與工具 (/templates)
 │   └─ 個別模板 (/templates/[slug])
 │
-└─ 聯絡我們 (/contact)
+├─ 聯絡我們 (/contact)
+├─ 預約諮詢 (/booking)
+│   └─ 預約確認 (/booking/confirmation/[id])
+└─ 管理後台 (/admin) [需登入]
+    ├─ 總覽 (/admin/dashboard)
+    ├─ 預約管理 (/admin/bookings)
+    └─ 時段管理 (/admin/slots)
 ```
 
 ## 2. 路由規格
@@ -42,7 +48,8 @@ AIDC.work
 | `/` | AIDC.work — 企業 AI 發展顧問 | 品牌入口、服務摘要、精選內容 |
 | `/about` | 關於 Jack Y. J. Hwang | 建立個人信任與專業 credibility |
 | `/services` | 服務項目 | 說明顧問服務範圍與合作方式 |
-| `/contact` | 聯絡我們 | 合作洽詢入口 |
+| `/contact` | 聯絡我們 | 合作洽詢說明與聯絡資訊 |
+| `/booking` | 預約諮詢 | 線上預約諮詢時段 |
 
 ### 2.2 內容列表頁
 
@@ -115,8 +122,15 @@ AIDC.work
 ### 3.8 聯絡我們 `/contact`
 
 - 合作洽詢說明
-- 聯絡表單或 email / 社群連結
-- 預期回覆時間與合作流程簡述
+- 線上預約入口（連結至 `/booking`）
+- Email 聯絡方式與合作流程簡述
+
+### 3.9 預約諮詢 `/booking`
+
+- 選擇諮詢服務類型
+- 選擇可預約時段（未來 4 週）
+- 填寫姓名、Email、公司、需求說明
+- 預約確認頁（預約編號與待確認提示）
 
 ## 4. 全域導覽
 
