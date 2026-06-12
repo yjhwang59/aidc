@@ -19,6 +19,7 @@ export function BookingWizard() {
   const [loadingServices, setLoadingServices] = useState(true);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [step, setStep] = useState(1);
+  const [draftSlotId, setDraftSlotId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/services")
@@ -26,6 +27,21 @@ export function BookingWizard() {
       .then((data) => {
         const list = data.services ?? [];
         setServices(list);
+        const draft = window.sessionStorage.getItem("aidc_booking_draft");
+        if (draft) {
+          try {
+            const parsed = JSON.parse(draft) as {
+              serviceId?: string;
+              slotId?: string;
+            };
+            if (parsed.serviceId) {
+              setSelectedServiceId(parsed.serviceId);
+              setDraftSlotId(parsed.slotId ?? null);
+            }
+          } catch {
+            window.sessionStorage.removeItem("aidc_booking_draft");
+          }
+        }
         if (initialSlug) {
           const match = list.find((s: ServiceOption) => s.slug === initialSlug);
           if (match) setSelectedServiceId(match.id);
@@ -45,6 +61,22 @@ export function BookingWizard() {
       );
       const data = await res.json();
       setSlots(data.slots ?? []);
+      const draft = window.sessionStorage.getItem("aidc_booking_draft");
+      if (draft) {
+        try {
+          const parsed = JSON.parse(draft) as {
+            serviceId?: string;
+            slotId?: string;
+          };
+          if (parsed.serviceId === serviceId && parsed.slotId) {
+            setSelectedSlotId(parsed.slotId);
+            setDraftSlotId(parsed.slotId);
+            setStep(3);
+          }
+        } catch {
+          window.sessionStorage.removeItem("aidc_booking_draft");
+        }
+      }
     } finally {
       setLoadingSlots(false);
     }
@@ -57,7 +89,7 @@ export function BookingWizard() {
   }, [selectedServiceId, loadSlots]);
 
   const selectedService = services.find((s) => s.id === selectedServiceId);
-  const selectedSlot = slots.find((s) => s.id === selectedSlotId);
+  const selectedSlot = slots.find((s) => s.id === (selectedSlotId ?? draftSlotId));
 
   if (loadingServices) {
     return <p className="text-sm text-brand-500">載入服務項目中...</p>;

@@ -18,6 +18,7 @@ export default function HomePage() {
   return (
     <>
       <HeroSection
+        bannerSrc="/brand/banner.jpg"
         subtitle="Enterprise AI Development Consultant"
         title="企業 AI 發展顧問"
         description="協助企業將 AI 從實驗走向落地。從 AI 工具培訓、Vibe Coding 到 AI Agent 工作流，建立可運行、可複製的系統與導入路線圖。"

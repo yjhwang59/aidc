@@ -4,9 +4,11 @@ import { jsonError } from "@/lib/api-utils";
 import { createBookingSchema } from "@/lib/validations/booking";
 import { sendBookingCreatedEmails } from "@/lib/email";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { requireMember } from "@/lib/auth/member-session";
 
 export async function POST(request: NextRequest) {
   try {
+    const member = await requireMember();
     const ip = getClientIp(request);
     const rate = checkRateLimit(`booking:${ip}`);
     if (!rate.allowed) {
@@ -19,8 +21,11 @@ export async function POST(request: NextRequest) {
       return jsonError(parsed.error.issues[0]?.message ?? "資料驗證失敗");
     }
 
-    const { slotId, serviceId, name, email, company, phone, message } =
-      parsed.data;
+    const { slotId, serviceId, name, email, company, phone, message } = parsed.data;
+
+    if (email.toLowerCase() !== member.email.toLowerCase()) {
+      return jsonError("預約 Email 必須與登入會員 Email 相同");
+    }
 
     const booking = await prisma.$transaction(async (tx) => {
       const slot = await tx.availabilitySlot.findUnique({
@@ -46,6 +51,7 @@ export async function POST(request: NextRequest) {
 
       const created = await tx.booking.create({
         data: {
+          memberId: member.id,
           serviceId,
           slotId,
           name,
@@ -110,6 +116,9 @@ export async function POST(request: NextRequest) {
       };
       if (messages[error.message]) {
         return jsonError(messages[error.message]);
+      }
+      if (error.message === "UNAUTHORIZED") {
+        return jsonError("請先登入會員後再預約", 401);
       }
     }
     console.error("[POST /api/bookings]", error);

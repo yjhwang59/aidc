@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { BookingStatusBadge } from "@/components/booking/BookingStatusBadge";
 import { formatSlotRange } from "@/lib/datetime";
+import { getCurrentMember } from "@/lib/auth/member-session";
 import { prisma } from "@/lib/prisma";
 import { createPageMetadata } from "@/lib/metadata";
 
@@ -33,6 +34,13 @@ export default async function BookingConfirmationPage({ params }: PageProps) {
 
   if (!booking) {
     notFound();
+  }
+
+  if (booking.memberId) {
+    const member = await getCurrentMember();
+    if (!member || member.id !== booking.memberId) {
+      notFound();
+    }
   }
 
   return (

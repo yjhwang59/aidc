@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -24,11 +24,15 @@ export function BookingForm({
 }: BookingFormProps) {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [memberLoaded, setMemberLoaded] = useState(false);
+  const [memberEmail, setMemberEmail] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    getValues,
+    reset,
   } = useForm<CreateBookingInput>({
     resolver: zodResolver(createBookingSchema),
     defaultValues: {
@@ -42,8 +46,56 @@ export function BookingForm({
     },
   });
 
+  useEffect(() => {
+    const draft = window.sessionStorage.getItem("aidc_booking_draft");
+    if (draft) {
+      try {
+        const parsed = JSON.parse(draft) as Partial<CreateBookingInput>;
+        reset({
+          serviceId,
+          slotId,
+          name: parsed.name ?? "",
+          email: parsed.email ?? "",
+          company: parsed.company ?? "",
+          phone: parsed.phone ?? "",
+          message: parsed.message ?? "",
+        });
+      } catch {
+        window.sessionStorage.removeItem("aidc_booking_draft");
+      }
+    }
+
+    fetch("/api/member/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.member) {
+          setMemberEmail(data.member.email);
+          const values = getValues();
+          reset({
+            ...values,
+            serviceId,
+            slotId,
+            name: values.name || data.member.name || "",
+            email: data.member.email || "",
+            company: values.company || data.member.company || "",
+            phone: values.phone || data.member.phone || "",
+          });
+        }
+      })
+      .finally(() => setMemberLoaded(true));
+  }, [getValues, reset, serviceId, slotId]);
+
   async function onSubmit(data: CreateBookingInput) {
     setSubmitError(null);
+    if (!memberEmail) {
+      window.sessionStorage.setItem(
+        "aidc_booking_draft",
+        JSON.stringify({ ...data, serviceId, slotId }),
+      );
+      router.push("/member/login?redirect=/booking");
+      return;
+    }
+
     try {
       const res = await fetch("/api/bookings", {
         method: "POST",
@@ -52,11 +104,20 @@ export function BookingForm({
       });
 
       const json = await res.json();
+      if (res.status === 401) {
+        window.sessionStorage.setItem(
+          "aidc_booking_draft",
+          JSON.stringify({ ...data, serviceId, slotId }),
+        );
+        router.push("/member/login?redirect=/booking");
+        return;
+      }
       if (!res.ok) {
         setSubmitError(json.error ?? "預約失敗，請稍後再試");
         return;
       }
 
+      window.sessionStorage.removeItem("aidc_booking_draft");
       router.push(`/booking/confirmation/${json.booking.id}`);
     } catch {
       setSubmitError("網路錯誤，請稍後再試");
@@ -77,6 +138,13 @@ export function BookingForm({
           <span className="font-medium">時段：</span>
           {slotLabel}
         </p>
+        {memberLoaded && (
+          <p className="mt-2 text-xs text-brand-500">
+            {memberEmail
+              ? `已登入會員：${memberEmail}`
+              : "送出預約前需要登入或建立會員帳號。系統會保留目前填寫內容。"}
+          </p>
+        )}
       </div>
 
       <div>
@@ -155,7 +223,11 @@ export function BookingForm({
         disabled={isSubmitting}
         className="inline-flex w-full items-center justify-center rounded-md bg-accent px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-dark disabled:opacity-60"
       >
-        {isSubmitting ? "送出中..." : "確認預約"}
+        {isSubmitting
+          ? "送出中..."
+          : memberEmail
+            ? "確認預約"
+            : "登入會員並繼續預約"}
       </button>
     </form>
   );

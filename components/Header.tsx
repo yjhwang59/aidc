@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Container } from "./Container";
@@ -12,11 +13,15 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b border-brand-100 bg-white/95 backdrop-blur-sm">
       <Container>
         <div className="flex h-16 items-center justify-between">
-          <Link
-            href="/"
-            className="text-lg font-semibold tracking-tight text-brand-900"
-          >
-            AIDC<span className="text-accent">.work</span>
+          <Link href="/" className="inline-flex shrink-0 items-center">
+            <Image
+              src="/brand/logo-color.png"
+              alt="AIDC.work"
+              width={328}
+              height={173}
+              className="h-8 w-auto"
+              priority
+            />
           </Link>
 
           <nav className="hidden items-center gap-6 md:flex">
@@ -31,7 +36,13 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="hidden md:block">
+          <div className="hidden items-center gap-3 md:flex">
+            <Link
+              href="/member"
+              className="text-sm text-brand-600 transition-colors hover:text-brand-900"
+            >
+              會員中心
+            </Link>
             <Link
               href="/booking"
               className="inline-flex items-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-dark"
@@ -85,6 +96,15 @@ export function Header() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  href="/member"
+                  className="block text-sm text-brand-600 hover:text-brand-900"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  會員中心
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/booking"
