@@ -23,6 +23,8 @@ AIDC.work
 │
 ├─ 課程與培訓 (/courses)
 │   └─ 個別課程 (/courses/[slug])
+│       ├─ 課程報名 (/courses/[slug]/enroll/[cohortId])
+│       └─ 課程報名確認 (/courses/enroll/confirmation/[id])
 │
 ├─ 部落格 (/blog)
 │   └─ 個別文章 (/blog/[slug])
@@ -36,7 +38,11 @@ AIDC.work
 └─ 管理後台 (/admin) [需登入]
     ├─ 總覽 (/admin/dashboard)
     ├─ 預約管理 (/admin/bookings)
-    └─ 時段管理 (/admin/slots)
+    ├─ 時段管理 (/admin/slots)
+    ├─ 課程方案 (/admin/course-programs)
+    ├─ 課程班期 (/admin/course-cohorts)
+    ├─ 課程報名 (/admin/course-enrollments)
+    └─ 帳號設定 (/admin/settings)
 ```
 
 ## 2. 路由規格
@@ -50,6 +56,8 @@ AIDC.work
 | `/services` | 服務項目 | 說明顧問服務範圍與合作方式 |
 | `/contact` | 聯絡我們 | 合作洽詢說明與聯絡資訊 |
 | `/booking` | 預約諮詢 | 線上預約諮詢時段 |
+| `/courses/[slug]/enroll/[cohortId]` | 課程報名 | 報名指定課程班期 |
+| `/courses/enroll/confirmation/[id]` | 課程報名確認 | 顯示課程報名結果與待確認提示 |
 
 ### 2.2 內容列表頁
 

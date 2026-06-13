@@ -7,6 +7,11 @@ const statusLabels: Record<string, { label: string; className: string }> = {
   AVAILABLE: { label: "可預約", className: "bg-green-100 text-green-800" },
   BOOKED: { label: "已預約", className: "bg-blue-100 text-blue-800" },
   BLOCKED: { label: "已封鎖", className: "bg-gray-100 text-gray-600" },
+  DRAFT: { label: "草稿", className: "bg-gray-100 text-gray-700" },
+  OPEN: { label: "開放報名", className: "bg-green-100 text-green-800" },
+  FULL: { label: "額滿", className: "bg-blue-100 text-blue-800" },
+  CLOSED: { label: "停止報名", className: "bg-gray-100 text-gray-700" },
+  WAITLISTED: { label: "候補", className: "bg-sky-100 text-sky-800" },
 };
 
 export function BookingStatusBadge({ status }: { status: string }) {

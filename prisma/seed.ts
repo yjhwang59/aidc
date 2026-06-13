@@ -1,5 +1,6 @@
 import { PrismaClient, SlotStatus } from "@prisma/client";
-import { addDays, setHours, setMinutes } from "date-fns";
+import { addDays, addWeeks, setHours, setMinutes } from "date-fns";
+import { courseProgramSeeds } from "../lib/course-data";
 
 const prisma = new PrismaClient();
 
@@ -82,6 +83,74 @@ async function main() {
               startAt,
               endAt,
               status: SlotStatus.AVAILABLE,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  for (const program of courseProgramSeeds) {
+    const saved = await prisma.courseProgram.upsert({
+      where: { slug: program.slug },
+      update: {
+        title: program.title,
+        description: program.description,
+        level: program.level,
+        durationWeeks: program.durationWeeks,
+        sessionDurationMin: program.sessionDurationMin,
+        capacity: program.capacity,
+        sortOrder: program.sortOrder,
+        isActive: true,
+      },
+      create: {
+        slug: program.slug,
+        title: program.title,
+        description: program.description,
+        level: program.level,
+        durationWeeks: program.durationWeeks,
+        sessionDurationMin: program.sessionDurationMin,
+        capacity: program.capacity,
+        sortOrder: program.sortOrder,
+        isActive: true,
+      },
+    });
+
+    if (process.env.SEED_DEMO_COURSES === "true") {
+      const firstSessionStart = setMinutes(
+        setHours(addDays(new Date(), 14), 19),
+        30,
+      );
+      const title = `${program.level ?? "課程"}示範班`;
+      const existing = await prisma.courseCohort.findFirst({
+        where: { courseProgramId: saved.id, title },
+      });
+
+      if (!existing) {
+        const cohort = await prisma.courseCohort.create({
+          data: {
+            courseProgramId: saved.id,
+            title,
+            startsAt: firstSessionStart,
+            endsAt: addWeeks(firstSessionStart, program.durationWeeks - 1),
+            registrationDeadline: addDays(firstSessionStart, -3),
+            capacity: program.capacity,
+            status: "OPEN",
+          },
+        });
+
+        for (let index = 0; index < program.sessions.length; index++) {
+          const startAt = addWeeks(firstSessionStart, index);
+          await prisma.courseSession.create({
+            data: {
+              cohortId: cohort.id,
+              weekNumber: index + 1,
+              startAt,
+              endAt: new Date(
+                startAt.getTime() + program.sessionDurationMin * 60 * 1000,
+              ),
+              topic: program.sessions[index].topic,
+              description: program.sessions[index].description,
             },
           });
         }

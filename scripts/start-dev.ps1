@@ -1,7 +1,8 @@
 # AIDC.work local dev launcher — free port 3163, then start Next.js dev server
 param(
     [int]$Port = 3163,
-    [switch]$CleanupOnly
+    [switch]$CleanupOnly,
+    [switch]$NewWindow
 )
 
 $ErrorActionPreference = "Stop"
@@ -57,6 +58,25 @@ if (Test-Path $lockFile) {
 
 if ($CleanupOnly) {
     Write-Phase "Cleanup only - port $Port released."
+    exit 0
+}
+
+if ($NewWindow) {
+    $devUrl = "http://localhost:$Port"
+    Write-Phase "Opening new terminal for dev server at $devUrl ..."
+    $launchCommand = @"
+Set-Location -LiteralPath '$AppRoot'
+Write-Host 'AIDC.work dev server -> $devUrl' -ForegroundColor Green
+Write-Host 'Close this window to stop the dev server.' -ForegroundColor DarkGray
+npm run dev
+"@
+    Start-Process -FilePath "powershell.exe" -ArgumentList @(
+        "-NoProfile",
+        "-NoExit",
+        "-ExecutionPolicy", "Bypass",
+        "-Command", $launchCommand
+    ) | Out-Null
+    Write-Phase "Dev server starting in a new window."
     exit 0
 }
 

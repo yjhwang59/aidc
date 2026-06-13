@@ -10,8 +10,16 @@ export default async function AdminDashboardPage() {
   const now = new Date();
   const weekEnd = addDays(now, 7);
 
-  const [pendingCount, upcomingBookings, recentBookings] = await Promise.all([
+  const [
+    pendingCount,
+    pendingEnrollmentCount,
+    upcomingBookings,
+    upcomingCohorts,
+    recentBookings,
+    recentEnrollments,
+  ] = await Promise.all([
     prisma.booking.count({ where: { status: "PENDING" } }),
+    prisma.courseEnrollment.count({ where: { status: "PENDING" } }),
     prisma.booking.findMany({
       where: {
         status: { in: ["PENDING", "CONFIRMED"] },
@@ -24,12 +32,31 @@ export default async function AdminDashboardPage() {
         slot: { select: { startAt: true, endAt: true } },
       },
     }),
+    prisma.courseCohort.findMany({
+      where: {
+        status: { in: ["OPEN", "FULL"] },
+        startsAt: { gte: startOfDay(now), lte: endOfDay(addDays(now, 60)) },
+      },
+      orderBy: { startsAt: "asc" },
+      take: 5,
+      include: {
+        courseProgram: { select: { title: true } },
+        _count: { select: { enrollments: { where: { status: "CONFIRMED" } } } },
+      },
+    }),
     prisma.booking.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
       include: {
         service: { select: { title: true } },
         slot: { select: { startAt: true, endAt: true } },
+      },
+    }),
+    prisma.courseEnrollment.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: {
+        cohort: { include: { courseProgram: { select: { title: true } } } },
       },
     }),
   ]);
@@ -41,10 +68,16 @@ export default async function AdminDashboardPage() {
         <p className="mt-1 text-sm text-brand-600">預約服務管理儀表板</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-4">
         <div className="rounded-lg border border-brand-100 bg-white p-6">
           <p className="text-sm text-brand-500">待確認預約</p>
           <p className="mt-2 text-3xl font-bold text-amber-600">{pendingCount}</p>
+        </div>
+        <div className="rounded-lg border border-brand-100 bg-white p-6">
+          <p className="text-sm text-brand-500">待確認課程報名</p>
+          <p className="mt-2 text-3xl font-bold text-amber-600">
+            {pendingEnrollmentCount}
+          </p>
         </div>
         <div className="rounded-lg border border-brand-100 bg-white p-6">
           <p className="text-sm text-brand-500">本週諮詢</p>
@@ -85,6 +118,35 @@ export default async function AdminDashboardPage() {
 
       <section className="rounded-lg border border-brand-100 bg-white">
         <div className="flex items-center justify-between border-b border-brand-100 px-6 py-4">
+          <h2 className="font-semibold text-brand-900">近期開課班期</h2>
+          <Link href="/admin/course-cohorts" className="text-sm text-accent hover:text-accent-dark">
+            管理班期 →
+          </Link>
+        </div>
+        {upcomingCohorts.length === 0 ? (
+          <p className="px-6 py-8 text-sm text-brand-500">近期沒有開放班期</p>
+        ) : (
+          <ul className="divide-y divide-brand-50">
+            {upcomingCohorts.map((cohort) => (
+              <li key={cohort.id} className="flex items-center justify-between px-6 py-4">
+                <div>
+                  <p className="font-medium text-brand-900">{cohort.title}</p>
+                  <p className="text-sm text-brand-600">
+                    {cohort.courseProgram.title} ·{" "}
+                    {formatSlotRange(cohort.startsAt, cohort.endsAt)}
+                  </p>
+                </div>
+                <p className="text-sm text-brand-500">
+                  {cohort._count.enrollments}/{cohort.capacity}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="rounded-lg border border-brand-100 bg-white">
+        <div className="flex items-center justify-between border-b border-brand-100 px-6 py-4">
           <h2 className="font-semibold text-brand-900">最近預約</h2>
           <Link href="/admin/bookings" className="text-sm text-accent hover:text-accent-dark">
             查看全部 →
@@ -101,6 +163,32 @@ export default async function AdminDashboardPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="rounded-lg border border-brand-100 bg-white">
+        <div className="flex items-center justify-between border-b border-brand-100 px-6 py-4">
+          <h2 className="font-semibold text-brand-900">最新課程報名</h2>
+          <Link href="/admin/course-enrollments" className="text-sm text-accent hover:text-accent-dark">
+            查看全部 →
+          </Link>
+        </div>
+        {recentEnrollments.length === 0 ? (
+          <p className="px-6 py-8 text-sm text-brand-500">尚無課程報名</p>
+        ) : (
+          <ul className="divide-y divide-brand-50">
+            {recentEnrollments.map((enrollment) => (
+              <li key={enrollment.id} className="flex items-center justify-between px-6 py-4">
+                <div>
+                  <p className="font-medium text-brand-900">{enrollment.name}</p>
+                  <p className="text-sm text-brand-600">
+                    {enrollment.cohort.courseProgram.title}
+                  </p>
+                </div>
+                <BookingStatusBadge status={enrollment.status} />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

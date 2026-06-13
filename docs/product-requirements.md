@@ -158,13 +158,15 @@ content/
 - Newsletter 訂閱
 - 內容搜尋與進階篩選
 - 英文版或雙語切換
-- 線上課程報名整合
+- 線上課程報名整合（見 [線上預約系統設計書](./booking-system-design.md)）
 - 訪客分析與轉換追蹤
 - 輕量 CMS 或 headless CMS 整合
 
 ## 9. 相關文件
 
 - [網站地圖](./site-map.md)
+- [線上預約系統設計書](./booking-system-design.md)
+- [課程班期預約系統開發規格書](./course-booking-system-spec.md)
 - [內容策略](./content-strategy.md)
 - [品牌指南](./brand-guide.md)
 - [開發流程](./development-workflow.md)
